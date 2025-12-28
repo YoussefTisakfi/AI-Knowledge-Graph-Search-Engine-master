@@ -25,20 +25,20 @@ public class TicketRepository {
         }
 
         String query = """
-            CREATE (t:Ticket {
-                id: $id,
-                title: $title,
-                description: $description,
-                status: $status,
-                priority: $priority,
-                category: $category,
-                assignedTo: $assignedTo,
-                createdBy: $createdBy,
-                createdAt: datetime($createdAt),
-                updatedAt: datetime($updatedAt)
-            })
-            RETURN t
-            """;
+                CREATE (t:Ticket {
+                    id: $id,
+                    title: $title,
+                    description: $description,
+                    status: $status,
+                    priority: $priority,
+                    category: $category,
+                    assignedTo: $assignedTo,
+                    createdBy: $createdBy,
+                    createdAt: datetime($createdAt),
+                    updatedAt: datetime($updatedAt)
+                })
+                RETURN t
+                """;
 
         try (Session session = connection.getSession()) {
             session.run(query,
@@ -52,9 +52,7 @@ public class TicketRepository {
                             "assignedTo", ticket.getAssignedTo(),
                             "createdBy", ticket.getCreatedBy(),
                             "createdAt", ticket.getCreatedAt().toString(),
-                            "updatedAt", ticket.getUpdatedAt().toString()
-                    )
-            );
+                            "updatedAt", ticket.getUpdatedAt().toString()));
             System.out.println("✅ Ticket created: " + ticket.getId());
             return ticket;
         } catch (Exception e) {
@@ -105,16 +103,16 @@ public class TicketRepository {
         ticket.setUpdatedAt(LocalDateTime.now());
 
         String query = """
-            MATCH (t:Ticket {id: $id})
-            SET t.title = $title,
-                t.description = $description,
-                t.status = $status,
-                t.priority = $priority,
-                t.category = $category,
-                t.assignedTo = $assignedTo,
-                t.updatedAt = datetime($updatedAt)
-            RETURN t
-            """;
+                MATCH (t:Ticket {id: $id})
+                SET t.title = $title,
+                    t.description = $description,
+                    t.status = $status,
+                    t.priority = $priority,
+                    t.category = $category,
+                    t.assignedTo = $assignedTo,
+                    t.updatedAt = datetime($updatedAt)
+                RETURN t
+                """;
 
         try (Session session = connection.getSession()) {
             session.run(query,
@@ -126,9 +124,7 @@ public class TicketRepository {
                             "priority", ticket.getPriority(),
                             "category", ticket.getCategory(),
                             "assignedTo", ticket.getAssignedTo(),
-                            "updatedAt", ticket.getUpdatedAt().toString()
-                    )
-            );
+                            "updatedAt", ticket.getUpdatedAt().toString()));
             System.out.println("✅ Ticket updated: " + ticket.getId());
             return ticket;
         } catch (Exception e) {
@@ -151,7 +147,102 @@ public class TicketRepository {
         }
     }
 
-    // Get ticket count by status
+    // Save ticket (create or update)
+    public Ticket save(Ticket ticket) {
+        if (ticket.getId() == null || ticket.getId().isEmpty() || findById(ticket.getId()) == null) {
+            return create(ticket);
+        } else {
+            return update(ticket);
+        }
+    }
+
+    // Find tickets by status
+    public List<Ticket> findByStatus(org.example.model.enums.TicketStatus status) {
+        String query = "MATCH (t:Ticket {status: $status}) RETURN t ORDER BY t.createdAt DESC";
+        List<Ticket> tickets = new ArrayList<>();
+
+        try (Session session = connection.getSession()) {
+            Result result = session.run(query, Values.parameters("status", status.name()));
+            while (result.hasNext()) {
+                tickets.add(mapToTicket(result.next()));
+            }
+            System.out.println("✅ Found " + tickets.size() + " tickets with status: " + status);
+        } catch (Exception e) {
+            System.err.println("❌ Error finding tickets by status: " + e.getMessage());
+        }
+
+        return tickets;
+    }
+
+    // Find tickets by priority
+    public List<Ticket> findByPriority(org.example.model.enums.Priority priority) {
+        String query = "MATCH (t:Ticket {priority: $priority}) RETURN t ORDER BY t.createdAt DESC";
+        List<Ticket> tickets = new ArrayList<>();
+
+        try (Session session = connection.getSession()) {
+            Result result = session.run(query, Values.parameters("priority", priority.name()));
+            while (result.hasNext()) {
+                tickets.add(mapToTicket(result.next()));
+            }
+            System.out.println("✅ Found " + tickets.size() + " tickets with priority: " + priority);
+        } catch (Exception e) {
+            System.err.println("❌ Error finding tickets by priority: " + e.getMessage());
+        }
+
+        return tickets;
+    }
+
+    // Find tickets by assignee
+    public List<Ticket> findByAssignee(String assigneeId) {
+        String query = "MATCH (t:Ticket {assignedTo: $assigneeId}) RETURN t ORDER BY t.createdAt DESC";
+        List<Ticket> tickets = new ArrayList<>();
+
+        try (Session session = connection.getSession()) {
+            Result result = session.run(query, Values.parameters("assigneeId", assigneeId));
+            while (result.hasNext()) {
+                tickets.add(mapToTicket(result.next()));
+            }
+            System.out.println("✅ Found " + tickets.size() + " tickets assigned to: " + assigneeId);
+        } catch (Exception e) {
+            System.err.println("❌ Error finding tickets by assignee: " + e.getMessage());
+        }
+
+        return tickets;
+    }
+
+    // Get total ticket count
+    public long count() {
+        String query = "MATCH (t:Ticket) RETURN count(t) as count";
+
+        try (Session session = connection.getSession()) {
+            Result result = session.run(query);
+            if (result.hasNext()) {
+                return result.next().get("count").asLong();
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error counting tickets: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    // Get ticket count by status (enum version)
+    public long countByStatus(org.example.model.enums.TicketStatus status) {
+        String query = "MATCH (t:Ticket {status: $status}) RETURN count(t) as count";
+
+        try (Session session = connection.getSession()) {
+            Result result = session.run(query, Values.parameters("status", status.name()));
+            if (result.hasNext()) {
+                return result.next().get("count").asLong();
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error counting tickets by status: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
+    // Get ticket count by status (String version - for backward compatibility)
     public long countByStatus(String status) {
         String query = "MATCH (t:Ticket {status: $status}) RETURN count(t) as count";
 
@@ -167,15 +258,31 @@ public class TicketRepository {
         return 0;
     }
 
+    // Get ticket count by priority
+    public long countByPriority(org.example.model.enums.Priority priority) {
+        String query = "MATCH (t:Ticket {priority: $priority}) RETURN count(t) as count";
+
+        try (Session session = connection.getSession()) {
+            Result result = session.run(query, Values.parameters("priority", priority.name()));
+            if (result.hasNext()) {
+                return result.next().get("count").asLong();
+            }
+        } catch (Exception e) {
+            System.err.println("❌ Error counting tickets by priority: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
     // Search tickets by title or description
     public List<Ticket> search(String keyword) {
         String query = """
-            MATCH (t:Ticket)
-            WHERE toLower(t.title) CONTAINS toLower($keyword)
-               OR toLower(t.description) CONTAINS toLower($keyword)
-            RETURN t
-            ORDER BY t.createdAt DESC
-            """;
+                MATCH (t:Ticket)
+                WHERE toLower(t.title) CONTAINS toLower($keyword)
+                   OR toLower(t.description) CONTAINS toLower($keyword)
+                RETURN t
+                ORDER BY t.createdAt DESC
+                """;
 
         List<Ticket> tickets = new ArrayList<>();
 

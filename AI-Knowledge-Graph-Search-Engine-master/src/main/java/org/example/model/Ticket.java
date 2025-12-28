@@ -9,10 +9,13 @@ public class Ticket {
     private String status;
     private String priority;
     private String category;
+    private String categoryId; // Added for service compatibility
     private String assignedTo;
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime dueDate; // Added for SLA tracking
+    private LocalDateTime resolvedAt; // Added for resolution tracking
 
     public Ticket() {
         this.createdAt = LocalDateTime.now();
@@ -20,51 +23,129 @@ public class Ticket {
     }
 
     public Ticket(String id, String title, String description, String status,
-                  String priority, String category, String assignedTo) {
+            String priority, String category, String assignedTo) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.status = status;
         this.priority = priority;
         this.category = category;
+        this.categoryId = category; // Set both for compatibility
         this.assignedTo = assignedTo;
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     // Getters and Setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
+    public String getId() {
+        return id;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public String getPriority() { return priority; }
-    public void setPriority(String priority) { this.priority = priority; }
+    public String getDescription() {
+        return description;
+    }
 
-    public String getCategory() { return category; }
-    public void setCategory(String category) { this.category = category; }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    public String getAssignedTo() { return assignedTo; }
-    public void setAssignedTo(String assignedTo) { this.assignedTo = assignedTo; }
+    public String getStatus() {
+        return status;
+    }
 
-    public String getCreatedBy() { return createdBy; }
-    public void setCreatedBy(String createdBy) { this.createdBy = createdBy; }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    public String getPriority() {
+        return priority;
+    }
 
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    public void setPriority(String priority) {
+        this.priority = priority;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+        this.categoryId = category; // Keep in sync
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(String categoryId) {
+        this.categoryId = categoryId;
+        this.category = categoryId; // Keep in sync
+    }
+
+    public String getAssignedTo() {
+        return assignedTo;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDateTime getResolvedAt() {
+        return resolvedAt;
+    }
+
+    public void setResolvedAt(LocalDateTime resolvedAt) {
+        this.resolvedAt = resolvedAt;
+    }
 
     public String getCreatedAtFormatted() {
-        if (createdAt == null) return "";
+        if (createdAt == null)
+            return "";
         return createdAt.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 

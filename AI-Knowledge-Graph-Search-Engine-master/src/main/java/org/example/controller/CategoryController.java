@@ -17,15 +17,23 @@ import java.util.ResourceBundle;
 
 public class CategoryController implements Initializable {
 
-    @FXML private TableView<Category> categoryTable;
-    @FXML private TableColumn<Category, String> colCategoryId;
-    @FXML private TableColumn<Category, String> colName;
-    @FXML private TableColumn<Category, String> colDescription;
-    @FXML private TableColumn<Category, String> colColor;
-    @FXML private TableColumn<Category, Integer> colTicketCount;
-    @FXML private TableColumn<Category, Void> colActions;
+    @FXML
+    private TableView<Category> categoryTable;
+    @FXML
+    private TableColumn<Category, String> colCategoryId;
+    @FXML
+    private TableColumn<Category, String> colName;
+    @FXML
+    private TableColumn<Category, String> colDescription;
+    @FXML
+    private TableColumn<Category, String> colColor;
+    @FXML
+    private TableColumn<Category, Integer> colTicketCount;
+    @FXML
+    private TableColumn<Category, Void> colActions;
 
-    @FXML private TextField searchField;
+    @FXML
+    private TextField searchField;
 
     private ObservableList<Category> categoryList;
 
@@ -46,8 +54,7 @@ public class CategoryController implements Initializable {
                 new Category("CAT007", "Performance", "Performance issues", "#16a085", 22),
                 new Category("CAT008", "Feature", "Feature requests", "#27ae60", 31),
                 new Category("CAT009", "Bug", "Software bugs", "#d35400", 28),
-                new Category("CAT010", "Other", "Other issues", "#95a5a6", 10)
-        );
+                new Category("CAT010", "Other", "Other issues", "#95a5a6", 10));
     }
 
     private void setupTable() {
@@ -202,10 +209,9 @@ public class CategoryController implements Initializable {
         if (query.isEmpty()) {
             categoryTable.setItems(categoryList);
         } else {
-            ObservableList<Category> filtered = categoryList.filtered(cat ->
-                    cat.getName().toLowerCase().contains(query) ||
-                            cat.getDescription().toLowerCase().contains(query)
-            );
+            ObservableList<Category> filtered = categoryList
+                    .filtered(cat -> cat.getName().toLowerCase().contains(query) ||
+                            cat.getDescription().toLowerCase().contains(query));
             categoryTable.setItems(filtered);
         }
     }
@@ -293,7 +299,7 @@ public class CategoryController implements Initializable {
         private int ticketCount;
 
         public Category(String categoryId, String name, String description,
-                        String color, int ticketCount) {
+                String color, int ticketCount) {
             this.categoryId = categoryId;
             this.name = name;
             this.description = description;
@@ -301,14 +307,40 @@ public class CategoryController implements Initializable {
             this.ticketCount = ticketCount;
         }
 
-        public String getCategoryId() { return categoryId; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-        public String getColor() { return color; }
-        public void setColor(String color) { this.color = color; }
-        public int getTicketCount() { return ticketCount; }
-        public void setTicketCount(int ticketCount) { this.ticketCount = ticketCount; }
+        public String getCategoryId() {
+            return categoryId;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public String getColor() {
+            return color;
+        }
+
+        public void setColor(String color) {
+            this.color = color;
+        }
+
+        public int getTicketCount() {
+            return ticketCount;
+        }
+
+        public void setTicketCount(int ticketCount) {
+            this.ticketCount = ticketCount;
+        }
     }
 }
